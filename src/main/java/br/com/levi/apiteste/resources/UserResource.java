@@ -7,7 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,4 +34,17 @@ public class UserResource {
         return ResponseEntity.ok().body(userService
                 .findAll().stream().map( x -> mapping.map(x,UserDTO.class)).collect(Collectors.toList()));
     }
+    @PostMapping
+    public ResponseEntity<UserDTO> create(@RequestBody UserDTO objDTO){
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}").buildAndExpand(userService.create(objDTO).getId()).toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Integer id,@RequestBody UserDTO objDTO){
+        objDTO.setId(id);
+        return ResponseEntity.ok().body(mapping.map(userService.update(id,objDTO), UserDTO.class));
+    }
+
 }
