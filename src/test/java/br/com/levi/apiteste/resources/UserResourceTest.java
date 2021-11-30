@@ -10,8 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,7 +69,23 @@ class UserResourceTest {
     }
 
     @Test
-    void findAll() {
+    void whenFindAllThenReturnSuccess() {
+        when(userService.findAll()).thenReturn(List.of(user));
+        when(mapping.map(any(),any())).thenReturn(userDTO);
+
+        ResponseEntity<List<UserDTO>> responseEntity = userResource.findAll();
+
+        assertNotNull(responseEntity);
+        assertNotNull(responseEntity.getBody());
+        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(ResponseEntity.class,responseEntity.getClass());
+        assertEquals(ArrayList.class,responseEntity.getBody().getClass());
+        assertEquals(UserDTO.class,responseEntity.getBody().get(INDEX).getClass());
+
+        assertEquals(ID,responseEntity.getBody().get(INDEX).getId());
+        assertEquals(NAME,responseEntity.getBody().get(INDEX).getName());
+        assertEquals(EMAIL,responseEntity.getBody().get(INDEX).getEmail());
+        assertEquals(PASSWORD,responseEntity.getBody().get(INDEX).getPassword());
     }
 
     @Test
