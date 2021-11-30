@@ -53,7 +53,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findById() {
+    void whenfindByIdThenReturnSuccess() {
 
         when(userRepository.findById(anyInt())).thenReturn(optionalUser);
 
