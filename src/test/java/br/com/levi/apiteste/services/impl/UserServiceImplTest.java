@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
@@ -29,6 +28,7 @@ class UserServiceImplTest {
     private static final String EMAIL = "levisaturnio@gmail.com";
     private static final String PASSWORD = "123";
     private static final int INDEX = 0;
+    public static final String E_MAIL_JA_CADASTRADO_NO_SISTEMA = "E-mail já cadastrado no sistema!";
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -93,22 +93,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    void whenCreateThenReturnSuccess() {
-        when(userRepository.findByEmail(any())).thenReturn(optionalUser);
-        try{
-            optionalUser.get().setId(2);
-              userService.create(userDTO);
-
-        }catch (Exception ex){
-            assertEquals(DataIntegrityViolationException.class,ex.getClass());
-            assertEquals("E-mail já cadastrado no sistema!",ex.getMessage());
-        }
-
-    }
-
-    @Test
-    void whenCreateThenReturnDataIntegrityViolationException() {
-        when(userRepository.save(any())).thenReturn(new DataIntegrityViolationException("E-mail já existente no sistema"));
+    void  whenCreateThenReturnSuccess() {
+        when(userRepository.save(any())).thenReturn(user);
 
         User response = userService.create(userDTO);
 
@@ -119,11 +105,47 @@ class UserServiceImplTest {
         assertEquals(NAME,response.getName());
         assertEquals(EMAIL,response.getEmail());
         assertEquals(PASSWORD,response.getPassword());
-
     }
 
     @Test
-    void update() {
+    void whenCreateThenReturnDataIntegrityViolationException () {
+        when(userRepository.findByEmail(any())).thenReturn(optionalUser);
+        try{
+            optionalUser.get().setId(2);
+              userService.create(userDTO);
+
+        }catch (Exception ex){
+            assertEquals(DataIntegrityViolationException.class,ex.getClass());
+            assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA,ex.getMessage());
+        }
+    }
+
+
+    @Test
+    void whenUpdateThenReturnSuccess() {
+        when(userRepository.save(any())).thenReturn(user);
+
+        User response = userService.update(1,userDTO);
+
+        assertNotNull(response);
+
+        assertEquals(User.class,response.getClass());
+        assertEquals(ID,response.getId());
+        assertEquals(NAME,response.getName());
+        assertEquals(EMAIL,response.getEmail());
+        assertEquals(PASSWORD,response.getPassword());
+    }
+
+    @Test
+    void whenUpdateThenReturnDataIntegrityViolationException() {
+        when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
+        try{
+            userService.update(1,userDTO);
+
+        }catch (Exception ex){
+            assertEquals(DataIntegrityViolationException.class,ex.getClass());
+            assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA,ex.getMessage());
+        }
     }
 
     @Test
