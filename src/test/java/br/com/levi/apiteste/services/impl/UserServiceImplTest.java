@@ -3,6 +3,7 @@ package br.com.levi.apiteste.services.impl;
 import br.com.levi.apiteste.domian.User;
 import br.com.levi.apiteste.domian.dtos.UserDTO;
 import br.com.levi.apiteste.repositories.UserRepository;
+import br.com.levi.apiteste.services.exceptions.DataIntegrityViolationException;
 import br.com.levi.apiteste.services.exceptions.ObjectnotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +93,33 @@ class UserServiceImplTest {
     }
 
     @Test
-    void create() {
+    void whenCreateThenReturnSuccess() {
+        when(userRepository.findByEmail(any())).thenReturn(optionalUser);
+        try{
+            optionalUser.get().setId(2);
+              userService.create(userDTO);
+
+        }catch (Exception ex){
+            assertEquals(DataIntegrityViolationException.class,ex.getClass());
+            assertEquals("E-mail já cadastrado no sistema!",ex.getMessage());
+        }
+
+    }
+
+    @Test
+    void whenCreateThenReturnDataIntegrityViolationException() {
+        when(userRepository.save(any())).thenReturn(new DataIntegrityViolationException("E-mail já existente no sistema"));
+
+        User response = userService.create(userDTO);
+
+        assertNotNull(response);
+
+        assertEquals(User.class,response.getClass());
+        assertEquals(ID,response.getId());
+        assertEquals(NAME,response.getName());
+        assertEquals(EMAIL,response.getEmail());
+        assertEquals(PASSWORD,response.getPassword());
+
     }
 
     @Test
