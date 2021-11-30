@@ -1,3 +1,4 @@
+/*
 package br.com.levi.apiteste;
 
 import org.junit.jupiter.api.Test;
@@ -12,3 +13,4 @@ class ApiTesteApplicationTests {
     }
 
 }
+*/

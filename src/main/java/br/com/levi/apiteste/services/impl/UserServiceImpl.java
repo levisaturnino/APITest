@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(Integer id, UserDTO objDTO) {
+    public User update(UserDTO objDTO) {
         findByEmail(objDTO);
         return userRepository.save(mapping.map(objDTO,User.class));
     }

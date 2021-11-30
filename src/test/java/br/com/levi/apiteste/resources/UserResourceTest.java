@@ -26,7 +26,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class UserResourceTest {
 
@@ -110,11 +111,33 @@ class UserResourceTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        when(userService.update(userDTO)).thenReturn(user);
+        when(mapping.map(any(),any())).thenReturn(userDTO);
+
+        ResponseEntity<UserDTO> responseEntity = userResource.update(ID,userDTO);
+
+        assertNotNull(responseEntity);
+        assertNotNull(responseEntity.getBody());
+        assertEquals(ResponseEntity.class,responseEntity.getClass());
+        assertEquals(UserDTO.class,responseEntity.getBody().getClass());
+        assertEquals(ID,responseEntity.getBody().getId());
+        assertEquals(NAME,responseEntity.getBody().getName());
+        assertEquals(EMAIL,responseEntity.getBody().getEmail());
+        assertEquals(PASSWORD,responseEntity.getBody().getPassword());
+
     }
 
     @Test
-    void delete() {
+    void whemDelete() {
+        doNothing().when(userService).delete(anyInt());
+       ResponseEntity<UserDTO> responseEntity = userResource.delete(ID);
+
+       assertNotNull(responseEntity);
+       assertEquals(ResponseEntity.class,responseEntity.getClass());
+       verify(userService,times(1)).delete(anyInt());
+       assertEquals(HttpStatus.NO_CONTENT,responseEntity.getStatusCode());
+
     }
 
     private void startUsers(){

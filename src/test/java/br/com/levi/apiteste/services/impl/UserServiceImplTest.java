@@ -126,7 +126,7 @@ class UserServiceImplTest {
     void whenUpdateThenReturnSuccess() {
         when(userRepository.save(any())).thenReturn(user);
 
-        User response = userService.update(1,userDTO);
+        User response = userService.update(userDTO);
 
         assertNotNull(response);
 
@@ -141,7 +141,7 @@ class UserServiceImplTest {
     void whenUpdateThenReturnDataIntegrityViolationException() {
         when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
         try{
-            userService.update(1,userDTO);
+            userService.update(userDTO);
 
         }catch (Exception ex){
             assertEquals(DataIntegrityViolationException.class,ex.getClass());
