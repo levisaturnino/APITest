@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class UserServiceImplTest {
 
@@ -149,7 +149,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void delete() {
+    void deleteWithSuccess() {
+        when(userRepository.findById(anyInt())).thenReturn(optionalUser);
+        doNothing().when(userRepository).deleteById(anyInt());
+        userService.delete(ID);
+        verify(userRepository,times(1)).deleteById(anyInt());
     }
     
     private void startUsers(){
