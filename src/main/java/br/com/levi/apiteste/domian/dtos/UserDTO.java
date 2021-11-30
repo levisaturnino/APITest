@@ -10,6 +10,7 @@ import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
 
     private Integer id;
